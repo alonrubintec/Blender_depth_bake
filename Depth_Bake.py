@@ -1,6 +1,7 @@
 # Created by Alon Rubin
-# To run this took copy the script to a new test file and run the script
-# A new ui panel named "Depth" would be added below blender's "Create" panel
+# This script is a Blender add-on that creates a user interface (UI) panel named "Depth" below the "Create" panel
+# and contains two buttons, "Prepare Objects" and "Render Objects", which apply transformations and rotation to
+# selected objects and render them in 9 angles respectively.
 
 import bpy
 import math
