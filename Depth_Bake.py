@@ -6,8 +6,9 @@
 import bpy
 import math
 
+
 # GUI class
-class Depth_Bake(bpy.types.Panel):
+class DepthBake(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "Depth"
@@ -35,20 +36,8 @@ class Depth_Bake(bpy.types.Panel):
         row3.operator("object.renderobject")
 
 
-def register():
-    bpy.utils.register_class(Depth_Bake)
-
-
-def unregister():
-    bpy.utils.unregister_class(Depth_Bake)
-
-
-if __name__ == "__main__":
-    register()
-
-
 # Operator fix origin, position and scale
-class Fix_Object(bpy.types.Operator):
+class FixObject(bpy.types.Operator):
     bl_idname = "object.fixobject"
     bl_label = "Prepare Objects"
 
@@ -60,18 +49,14 @@ class Fix_Object(bpy.types.Operator):
             ob.location[1] = 0
             ob.location[2] = 0
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-            maxDimension = 10.0
-            scaleFactor = maxDimension / max(ob.dimensions)
-            ob.scale = (scaleFactor, scaleFactor, scaleFactor)
+            max_dimension = 10.0
+            scale_factor = max_dimension / max(ob.dimensions)
+            ob.scale = (scale_factor, scale_factor, scale_factor)
             ob.hide_render = True
         return {"FINISHED"}
 
 
-bpy.utils.register_class(Fix_Object)
-
-
-# Render objects
-class Render_Object(bpy.types.Operator):
+class RenderObject(bpy.types.Operator):
     bl_idname = "object.renderobject"
     bl_label = "Render Objects"
 
@@ -85,20 +70,33 @@ class Render_Object(bpy.types.Operator):
 
         for ob in low_objects_names:
             obj = bpy.data.objects.get(ob)
-            randerpath = bpy.data.scenes[sceneKey].render.filepath
+            rander_path = bpy.data.scenes[sceneKey].render.filepath
             if obj is not None:
                 obj.hide_render = False
 
             for i in range(0, 9):
                 print(i)
                 obj.rotation_euler = (0, 0, math.radians(45) * i)
-                bpy.data.scenes[sceneKey].render.filepath = randerpath + obj.name + "_" + str(45 * i)
+                bpy.data.scenes[sceneKey].render.filepath = rander_path + obj.name + "_" + str(45 * i)
                 bpy.ops.render.render(write_still=True, use_viewport=True)
 
             obj.rotation_euler = (0, 0, 0)
             obj.hide_render = True
-            bpy.data.scenes[sceneKey].render.filepath = randerpath
+            bpy.data.scenes[sceneKey].render.filepath = rander_path
         return {"FINISHED"}
 
 
-bpy.utils.register_class(Render_Object)
+def register():
+    bpy.utils.register_class(DepthBake)
+    bpy.utils.register_class(FixObject)
+    bpy.utils.register_class(RenderObject)
+
+
+def unregister():
+    bpy.utils.unregister_class(DepthBake)
+    bpy.utils.unregister_class(FixObject)
+    bpy.utils.unregister_class(RenderObject)
+
+
+if __name__ == "__main__":
+    register()
